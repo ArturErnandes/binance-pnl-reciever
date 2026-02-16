@@ -1,7 +1,8 @@
 from fastapi import APIRouter
 
 from config import bots_list
-from classes import BotsListResponse
+from classes import BotsListResponse, StatHistorySchema
+from database import get_stat_history as get_stat_history_db
 from logger import get_logger
 
 
@@ -27,7 +28,7 @@ def get_day_stat(bot_id: str):
 
 @app_endpoints.get("/get_stat_history", tags=["PnL"], summary="Получение истории PnL и баланса")
 async def get_stat_history(bot_id: str):
-    ...
+    return await get_stat_history_db(bot_id)
 
 
 @app_endpoints.get("/get_day_orders", tags=["Orders"], summary="Получение истории ордеров в течении дня")
