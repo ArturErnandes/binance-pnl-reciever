@@ -41,8 +41,18 @@ class FastApiConfig:
 
 
 @dataclass(frozen=True)
-class StatSchema:
-    date: datetime.date
+class StatPostSchema:
     bot_id: str
+    date: datetime.date
     pnl: float
     pnl_percent: float
+
+
+@dataclass(frozen=True)
+class StatHistorySchema:
+    date: datetime.date
+    pnl: float
+    pnl_percent: float
+    balance: float
+
+
