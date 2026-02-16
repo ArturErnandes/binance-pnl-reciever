@@ -1,6 +1,6 @@
 import json
 
-from classes import DbConfig
+from classes import DbConfig, FastApiConfig
 
 data_file = "stat-data.json"
 
@@ -16,3 +16,7 @@ db_data = DbConfig(
     name=config_data["database"]["name"],
 )
 
+fastapi_data = FastApiConfig(
+    host=config_data["app"]["host"],
+    port=int(config_data["app"]["port"]),
+)
