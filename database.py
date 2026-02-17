@@ -1,6 +1,5 @@
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy import text
-import html
 
 from config import db_data
 from classes import StatHistorySchema, StatPostSchema
@@ -49,10 +48,30 @@ async def get_stat_history(bot_id: str):
             return stat_history
 
         except Exception as e:
-            short_err = html.unescape(str(e))
-
-            logger.exception(f"Ошибка получения истории PnL | bot_id: {bot_id} | error: {short_err}")
+            logger.exception(f"Ошибка получения истории PnL | bot_id: {bot_id} | error: {str(e)}")
             return []
+
+
+async def get_balance(bot_id, day):
+    logger.info("Запрос баланса за предыдущий день")
+
+    query = text("""
+                 SELECT balance
+                 FROM stats
+                 WHERE day = : day AND bot_id = :bot_id
+                 """)
+
+    async with new_session() as session:
+        try:
+            result = await session.execute(query, {"day": day, "bot_id": bot_id})
+            balance = float(result.scalar_one_or_none())
+
+            logger.info(f"Баланс успешно получен | {balance}")
+            return balance
+
+        except Exception as e:
+            logger.exception(f"Ошибка получения баланса | bot_id: {bot_id} day: {day} error: {e}")
+            raise RuntimeError(f"balance_not_found bot_id: {bot_id} day: {day}") from e
 
 
 async def post_day_stat(bot_id: str, day_stat: StatPostSchema):
