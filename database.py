@@ -14,7 +14,7 @@ engine = create_async_engine(
 new_session = async_sessionmaker(engine, expire_on_commit=False)
 
 
-async def get_stat_history(bot_id: str):
+async def get_stat_history_db(bot_id: str):
     logger.info(f"Запрос истории PnL | Bot_id: {bot_id}")
 
     query = text("""
@@ -52,7 +52,7 @@ async def get_stat_history(bot_id: str):
             return []
 
 
-async def get_balance(bot_id, day):
+async def get_yesterday_balance_db(bot_id, day):
     logger.info("Запрос баланса за предыдущий день")
 
     query = text("""
