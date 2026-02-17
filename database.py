@@ -58,7 +58,7 @@ async def get_yesterday_balance_db(bot_id, day):
     query = text("""
                  SELECT balance
                  FROM stats
-                 WHERE day = : day AND bot_id = :bot_id
+                 WHERE day = :day AND bot_id = :bot_id
                  """)
 
     async with new_session() as session:
