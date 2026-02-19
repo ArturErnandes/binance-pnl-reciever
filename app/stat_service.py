@@ -1,10 +1,10 @@
-from binance import get_balance
 import datetime
 
-from classes import ApiConfig, StatSchema
-from database import get_yesterday_balance_db
-from config import bots_list
-from logger import get_logger
+from .classes import ApiConfig, StatSchema
+from .binance import get_balance
+from .database import get_yesterday_balance_db
+from .config import bots_list
+from .logger import get_logger
 
 
 logger = get_logger(__name__)

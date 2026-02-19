@@ -1,9 +1,9 @@
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy import text
 
-from config import db_data
-from classes import StatHistorySchema, StatPostSchema
-from logger import get_logger
+from .config import db_data
+from .classes import StatHistorySchema, StatPostSchema
+from .logger import get_logger
 
 
 logger = get_logger(__name__)

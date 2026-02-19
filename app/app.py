@@ -1,10 +1,10 @@
 from fastapi import APIRouter
 
-from config import bots_list
-from classes import BotsListResponse
-from database import get_stat_history_db
-from stat_service import count_day_stat
-from logger import get_logger
+from .config import bots_list
+from .classes import BotsListResponse
+from .database import get_stat_history_db
+from .stat_service import count_day_stat
+from .logger import get_logger
 
 
 logger = get_logger(__name__)

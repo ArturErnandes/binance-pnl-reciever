@@ -1,6 +1,6 @@
 import json
 
-from classes import DbConfig, FastApiConfig, TradeBotSchema, BotsList, ApiConfig
+from .classes import DbConfig, FastApiConfig, TradeBotSchema, BotsList, ApiConfig
 
 
 data_file = "stat-data.json"
