@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 import uvicorn
 
-from app import app_endpoints
-from config import fastapi_data
-from logger import get_logger
+from app.app import app_endpoints
+from app.config import fastapi_data
+from app.logger import get_logger
 
 
 logger = get_logger(__name__)
