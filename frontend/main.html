@@ -65,8 +65,7 @@
 
   <script>
     // ====== CONFIG ======
-    // Пример: http://IP:port
-    const API_BASE = "http://IP:port";
+    const API_BASE = "http://45.89.188.69:5555";
 
     const ENDPOINTS = {
       common: "/get_common_balance",
@@ -87,8 +86,6 @@
     }
 
     function splitName(name){
-      // "BTC базовый" -> ["BTC", "базовый"]
-      // "Стопы" -> ["Стопы", ""]
       const parts = String(name || "").trim().split(/\s+/).filter(Boolean);
       if (parts.length <= 1) return { main: parts[0] || "", sub: "" };
       return { main: parts[0], sub: parts.slice(1).join(" ") };
@@ -108,10 +105,8 @@
 
       const data = await apiGet(ENDPOINTS.common);
 
-      // balance
       commonBalanceEl.textContent = fmt2(data.balance);
 
-      // pnl
       commonPnlEl.className = `pnl-val ${pnlClass(data.pnl)}`;
       commonPnlEl.textContent = pnlText(data.pnl, data.pnl_percent);
     }
@@ -167,7 +162,6 @@
 
       botsEl.innerHTML = "";
 
-      // грузим stats параллельно, но рисуем в порядке как пришло (Object.keys)
       const promises = botIds.map(async (botId) => {
         const stat = await apiGet(`${ENDPOINTS.dayStat}?bot_id=${encodeURIComponent(botId)}`);
         return { botId, name: botsObj[botId], stat };
@@ -179,13 +173,11 @@
         renderBotRow(botsEl, r.botId, r.name, r.stat);
       }
 
-      // если ботов нет
       if (botIds.length === 0){
         botsEl.innerHTML = `<div class="muted">Нет подключенных ботов</div>`;
       }
     }
 
-    // ====== INIT ======
     document.getElementById("reloadBtn").addEventListener("click", () => {
       location.reload();
     });
@@ -194,7 +186,6 @@
       try{
         await Promise.all([loadCommon(), loadBots()]);
       }catch(e){
-        // минимально: покажем ошибку в консоли, UI оставим с loaders
         console.error(e);
       }
     })();
