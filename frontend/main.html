@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Trading bots PnL</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="page">
+    <h1 class="header-title">Торговые боты</h1>
+
+    <section class="layout">
+      <!-- LEFT -->
+      <div class="left">
+        <div class="block-label">Общий баланс ботов</div>
+
+        <div class="balance-row">
+          <div id="commonBalance" class="balance-value">
+            <span class="skeleton sk-balance" aria-label="loading"></span>
+          </div>
+          <div class="balance-unit">USDT</div>
+        </div>
+
+        <div class="pnl-row">
+          PNL за сегодня
+          <span id="commonPnl" class="pnl-val">
+            <span class="skeleton sk-pnl" aria-label="loading"></span>
+          </span>
+        </div>
+
+        <button class="btn" id="reloadBtn" type="button">Обновить</button>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="right">
+        <div class="panel">
+          <div class="panel-title">
+            Список подключенных ботов
+            <div class="panel-underline"></div>
+          </div>
+
+          <div id="botsList" class="bots">
+            <!-- skeleton rows -->
+            <div class="bot-row">
+              <div class="skeleton sk-botname"></div>
+              <div class="skeleton sk-botbal"></div>
+              <div class="skeleton sk-botpnl"></div>
+            </div>
+            <div class="bot-row">
+              <div class="skeleton sk-botname"></div>
+              <div class="skeleton sk-botbal"></div>
+              <div class="skeleton sk-botpnl"></div>
+            </div>
+            <div class="bot-row">
+              <div class="skeleton sk-botname"></div>
+              <div class="skeleton sk-botbal"></div>
+              <div class="skeleton sk-botpnl"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // ====== CONFIG ======
+    // Пример: http://IP:port
+    const API_BASE = "http://IP:port";
+
+    const ENDPOINTS = {
+      common: "/get_common_balance",
+      bots: "/get_bots_list",
+      dayStat: "/get_day_stat" // ?bot_id=
+    };
+
+    // ====== HELPERS ======
+    const fmt2 = (n) => Number(n).toFixed(2);
+
+    function pnlClass(pnl){
+      return pnl >= 0 ? "pnl-pos" : "pnl-neg";
+    }
+
+    function pnlText(pnl, pnlPercent){
+      const sign = pnl >= 0 ? "+" : "";
+      return `${sign}${fmt2(pnl)} (${sign}${fmt2(pnlPercent)}%)`;
+    }
+
+    function splitName(name){
+      // "BTC базовый" -> ["BTC", "базовый"]
+      // "Стопы" -> ["Стопы", ""]
+      const parts = String(name || "").trim().split(/\s+/).filter(Boolean);
+      if (parts.length <= 1) return { main: parts[0] || "", sub: "" };
+      return { main: parts[0], sub: parts.slice(1).join(" ") };
+    }
+
+    async function apiGet(path){
+      const url = API_BASE + path;
+      const resp = await fetch(url, { method: "GET" });
+      if (!resp.ok) throw new Error(`HTTP ${resp.status} for ${url}`);
+      return await resp.json();
+    }
+
+    // ====== RENDER COMMON ======
+    async function loadCommon(){
+      const commonBalanceEl = document.getElementById("commonBalance");
+      const commonPnlEl = document.getElementById("commonPnl");
+
+      const data = await apiGet(ENDPOINTS.common);
+
+      // balance
+      commonBalanceEl.textContent = fmt2(data.balance);
+
+      // pnl
+      commonPnlEl.className = `pnl-val ${pnlClass(data.pnl)}`;
+      commonPnlEl.textContent = pnlText(data.pnl, data.pnl_percent);
+    }
+
+    // ====== RENDER BOTS ======
+    function renderBotsSkeleton(container, count){
+      container.innerHTML = "";
+      for (let i = 0; i < count; i++){
+        const row = document.createElement("div");
+        row.className = "bot-row";
+        row.innerHTML = `
+          <div class="skeleton sk-botname"></div>
+          <div class="skeleton sk-botbal"></div>
+          <div class="skeleton sk-botpnl"></div>
+        `;
+        container.appendChild(row);
+      }
+    }
+
+    function renderBotRow(container, botId, botName, stat){
+      const { main, sub } = splitName(botName);
+
+      const row = document.createElement("div");
+      row.className = "bot-row";
+
+      const pnlCls = pnlClass(stat.pnl);
+      const pnlStr = (() => {
+        const sign = stat.pnl >= 0 ? "+" : "";
+        return `${sign}${fmt2(stat.pnl)}`;
+      })();
+
+      row.innerHTML = `
+        <div class="bot-name" title="${botId}">
+          <span class="main">${main}</span>
+          ${sub ? `<span class="sub">${sub}</span>` : ""}
+        </div>
+        <div class="bot-balance">$${fmt2(stat.balance)}</div>
+        <div class="bot-pnl ${pnlCls}">${pnlStr}</div>
+      `;
+
+      container.appendChild(row);
+    }
+
+    async function loadBots(){
+      const botsEl = document.getElementById("botsList");
+
+      const botsResp = await apiGet(ENDPOINTS.bots);
+      const botsObj = botsResp.bots || {};
+
+      const botIds = Object.keys(botsObj);
+
+      renderBotsSkeleton(botsEl, Math.max(3, botIds.length || 3));
+
+      botsEl.innerHTML = "";
+
+      // грузим stats параллельно, но рисуем в порядке как пришло (Object.keys)
+      const promises = botIds.map(async (botId) => {
+        const stat = await apiGet(`${ENDPOINTS.dayStat}?bot_id=${encodeURIComponent(botId)}`);
+        return { botId, name: botsObj[botId], stat };
+      });
+
+      const results = await Promise.all(promises);
+
+      for (const r of results){
+        renderBotRow(botsEl, r.botId, r.name, r.stat);
+      }
+
+      // если ботов нет
+      if (botIds.length === 0){
+        botsEl.innerHTML = `<div class="muted">Нет подключенных ботов</div>`;
+      }
+    }
+
+    // ====== INIT ======
+    document.getElementById("reloadBtn").addEventListener("click", () => {
+      location.reload();
+    });
+
+    (async () => {
+      try{
+        await Promise.all([loadCommon(), loadBots()]);
+      }catch(e){
+        // минимально: покажем ошибку в консоли, UI оставим с loaders
+        console.error(e);
+      }
+    })();
+  </script>
+</body>
+</html>
