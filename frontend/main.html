@@ -79,7 +79,7 @@
 
     function pnlText(pnl, pnlPercent){
       const sign = pnl >= 0 ? "+" : "";
-      return `${sign}${fmt2(pnl)} (${sign}${fmt2(pnlPercent)}%)`;
+      return `${sign}$${fmt2(pnl)} (${sign}${fmt2(pnlPercent)}%)`;
     }
 
     function splitName(name){
@@ -132,7 +132,7 @@
       const pnlCls = pnlClass(stat.pnl);
       const pnlStr = (() => {
         const sign = stat.pnl >= 0 ? "+" : "";
-        return `${sign}${fmt2(stat.pnl)}`;
+        return `${sign}${fmt2(stat.pnl)} $`;
       })();
 
       row.innerHTML = `
