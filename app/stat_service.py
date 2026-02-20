@@ -24,7 +24,7 @@ async def count_day_stat(bot_id: str):
     yesterday_balance = await get_yesterday_balance_db(bot_id, yesterday)
 
     pnl_value = balance - yesterday_balance
-    pnl_percent = (pnl_value / yesterday_balance * 100)
+    pnl_percent = (pnl_value / 800 * 100)
 
     return StatSchema(
         balance=balance,
