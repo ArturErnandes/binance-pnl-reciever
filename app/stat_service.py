@@ -31,3 +31,36 @@ async def count_day_stat(bot_id: str):
         pnl=pnl_value,
         pnl_percent=pnl_percent,
     )
+
+
+async def count_all_balance():
+    yesterday = datetime.date.today() - datetime.timedelta(days=1)
+
+    total_balance = 0
+    total_yesterday_balance = 0
+
+    bots = bots_list.bots
+
+    for bot in bots:
+        api = ApiConfig(
+            key=bot.api.key,
+            secret=bot.api.secret,
+        )
+
+        balance = get_balance(api)
+        total_balance += float(balance)
+
+        yesterday_balance = await get_yesterday_balance_db(bot.key, yesterday)
+
+        total_yesterday_balance += float(yesterday_balance)
+
+    pnl_value = total_balance - total_yesterday_balance
+
+    base = 800 * len(bots)
+    pnl_percent = (pnl_value / base * 100)
+
+    return StatSchema(
+        balance=float(total_balance),
+        pnl=float(pnl_value),
+        pnl_percent=float(pnl_percent),
+    )
