@@ -31,6 +31,7 @@ body{
   font-size: 56px;
   font-weight: 800;
   letter-spacing: 0.3px;
+  padding-left: 80px;
   margin: 0 0 56px 0;
 }
 
@@ -44,7 +45,8 @@ body{
 .left{
   flex: 1 1 auto;
   min-width: 420px;
-  padding-top: 30px;
+  padding-top: 50px;
+  padding-left: 80px;
 }
 
 .right{
@@ -102,6 +104,13 @@ body{
   border-radius: 8px;
   cursor:pointer;
   box-shadow: 0 8px 18px rgba(252,213,53,0.18);
+  transition: transform 120ms ease, filter 120ms ease, box-shadow 120ms ease;
+}
+
+.btn:hover{
+  filter: brightness(1.05);
+  box-shadow: 0 10px 22px rgba(252,213,53,0.28);
+  transform: translateY(-1px);
 }
 
 .btn:active{ transform: translateY(1px); }
@@ -139,6 +148,17 @@ body{
   grid-template-columns: 1fr auto auto;
   align-items:center;
   gap: 16px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.bot-row:hover,
+.bot-row:hover .bot-name .main,
+.bot-row:hover .bot-name .sub,
+.bot-row:hover .bot-balance,
+.bot-row:hover .bot-pnl{
+  color: var(--muted) !important; /* 898989 */
 }
 
 .bot-name{
