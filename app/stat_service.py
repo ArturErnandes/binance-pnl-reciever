@@ -19,7 +19,7 @@ async def count_day_stat(bot_id: str):
     )
 
     balance = get_balance(api)
-    yesterday = datetime.date.today() - datetime.timedelta(days=1)
+    yesterday = datetime.date.today() - datetime.timedelta(days=2)
 
     yesterday_balance = await get_yesterday_balance_db(bot_id, yesterday)
 
@@ -34,7 +34,7 @@ async def count_day_stat(bot_id: str):
 
 
 async def count_all_balance():
-    yesterday = datetime.date.today() - datetime.timedelta(days=1)
+    yesterday = datetime.date.today() - datetime.timedelta(days=2)
 
     total_balance = 0
     total_yesterday_balance = 0
