@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Bot PnL</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="page botpage">
+    <!-- top bar -->
+    <div class="bot-top">
+      <div class="bots-dd">
+        <button class="bots-dd-btn" id="botsDdBtn" type="button" aria-haspopup="true" aria-expanded="false">
+          <span class="bots-dd-label">Bots</span>
+          <span class="bots-dd-caret">▾</span>
+        </button>
+
+        <div class="bots-dd-menu" id="botsDdMenu" role="menu" aria-hidden="true">
+          <div class="bots-dd-loading">Загрузка...</div>
+        </div>
+      </div>
+
+      <h1 class="bot-title">
+        <span class="bot-title-prefix">Бот</span>
+        <span id="botTitleName" class="bot-title-name">...</span>
+      </h1>
+    </div>
+
+    <!-- balance + chart card -->
+    <section class="bot-card bot-balance-card">
+      <div class="bot-balance-left">
+        <div class="block-label">Текущий баланс</div>
+
+        <div class="balance-row">
+          <div id="botBalance" class="balance-value">
+            <span class="skeleton sk-balance" aria-label="loading"></span>
+          </div>
+          <div class="balance-unit">USDT</div>
+        </div>
+
+        <div class="pnl-row">
+          PNL за сегодня
+          <span id="botPnl" class="pnl-val">
+            <span class="skeleton sk-pnl" aria-label="loading"></span>
+          </span>
+        </div>
+      </div>
+
+      <div class="bot-chart-wrap" aria-label="balance chart">
+        <canvas id="balanceChart" width="520" height="170"></canvas>
+      </div>
+    </section>
+
+    <!-- history card -->
+    <section class="bot-card bot-history-card">
+      <div class="history-head">
+        <div class="history-title">История PNL</div>
+
+        <button class="btn btn-muted" id="downloadBtn" type="button">
+          Выгрузить историю PNL
+        </button>
+      </div>
+
+      <div class="history-table">
+        <div class="history-row history-header">
+          <div class="col-date">Дата</div>
+          <div class="col-balance">Баланс</div>
+          <div class="col-pnl">PNL</div>
+          <div class="col-pnlp">PNL %</div>
+        </div>
+
+        <div id="historyBody">
+          <div class="history-row">
+            <div class="skeleton sk-hdate"></div>
+            <div class="skeleton sk-hbal"></div>
+            <div class="skeleton sk-hpnl"></div>
+            <div class="skeleton sk-hpnlp"></div>
+          </div>
+          <div class="history-row">
+            <div class="skeleton sk-hdate"></div>
+            <div class="skeleton sk-hbal"></div>
+            <div class="skeleton sk-hpnl"></div>
+            <div class="skeleton sk-hpnlp"></div>
+          </div>
+          <div class="history-row">
+            <div class="skeleton sk-hdate"></div>
+            <div class="skeleton sk-hbal"></div>
+            <div class="skeleton sk-hpnl"></div>
+            <div class="skeleton sk-hpnlp"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // ====== CONFIG (как в main.html) ======
+    const API_BASE = "http://45.89.188.69:5555";
+
+    const ENDPOINTS = {
+      bots: "/get_bots_list",
+      dayStat: "/get_day_stat",         // ?bot_id=
+      statHistory: "/get_stat_history"  // ?bot_id=
+    };
+
+    // ====== HELPERS ======
+    const fmt2 = (n) => Number(n).toFixed(2);
+
+    function pnlClass(pnl){
+      return pnl >= 0 ? "pnl-pos" : "pnl-neg";
+    }
+
+    function plus(n){
+      return n >= 0 ? "+" : "";
+    }
+
+    function apiGet(path){
+      const url = API_BASE + path;
+      return fetch(url, { method: "GET" }).then(r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status} for ${url}`);
+        return r.json();
+      });
+    }
+
+    function getBotIdFromQuery(){
+      const u = new URL(location.href);
+      return u.searchParams.get("bot_id") || "";
+    }
+
+    function splitName(name){
+      const parts = String(name || "").trim().split(/\s+/).filter(Boolean);
+      if (parts.length <= 1) return { main: parts[0] || "", sub: "" };
+      return { main: parts[0], sub: parts.slice(1).join(" ") };
+    }
+
+    // "2026-02-18" -> "18 февраля 2026"
+    function formatRuDate(iso){
+      const d = new Date(iso + "T00:00:00Z");
+      const day = d.getUTCDate();
+      const month = d.getUTCMonth();
+      const year = d.getUTCFullYear();
+
+      const months = [
+        "января","февраля","марта","апреля","мая","июня",
+        "июля","августа","сентября","октября","ноября","декабря"
+      ];
+
+      return `${day} ${months[month]} ${year}`;
+    }
+
+    // ====== DROPDOWN ======
+    function setDdOpen(isOpen){
+      const btn = document.getElementById("botsDdBtn");
+      const menu = document.getElementById("botsDdMenu");
+      btn.setAttribute("aria-expanded", String(isOpen));
+      menu.setAttribute("aria-hidden", String(!isOpen));
+      menu.classList.toggle("open", isOpen);
+    }
+
+    function renderBotsMenu(botsObj, activeBotId){
+      const menu = document.getElementById("botsDdMenu");
+      const entries = Object.entries(botsObj || {});
+      if (!entries.length){
+        menu.innerHTML = `<div class="bots-dd-empty">Нет ботов</div>`;
+        return;
+      }
+
+      menu.innerHTML = "";
+
+      for (const [botId, botName] of entries){
+        const { main, sub } = splitName(botName);
+
+        const item = document.createElement("a");
+        item.href = `./bot_page.html?bot_id=${encodeURIComponent(botId)}`;
+        item.className = "bots-dd-item";
+        item.setAttribute("role", "menuitem");
+
+        if (botId === activeBotId) item.classList.add("active");
+
+        item.innerHTML = `
+          <span class="dd-main">${main}</span>
+          ${sub ? `<span class="dd-sub">${sub}</span>` : ""}
+        `;
+
+        menu.appendChild(item);
+      }
+    }
+
+    // ====== CHART (простая отрисовка линией на canvas) ======
+    function drawBalanceChart(points){
+      const canvas = document.getElementById("balanceChart");
+      const ctx = canvas.getContext("2d");
+
+      const w = canvas.width, h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+
+      if (!points || points.length < 2){
+        // заглушка: тонкая линия
+        ctx.globalAlpha = 0.9;
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = "#FCD535";
+        ctx.beginPath();
+        ctx.moveTo(16, h - 24);
+        ctx.lineTo(w - 16, h - 24);
+        ctx.stroke();
+        return;
+      }
+
+      const padL = 16, padR = 16, padT = 12, padB = 18;
+      const innerW = w - padL - padR;
+      const innerH = h - padT - padB;
+
+      const ys = points.map(p => Number(p.balance));
+      const minY = Math.min(...ys);
+      const maxY = Math.max(...ys);
+      const span = (maxY - minY) || 1;
+
+      const xAt = (i) => padL + (innerW * i) / (points.length - 1);
+      const yAt = (val) => padT + innerH * (1 - (val - minY) / span);
+
+      // area fill (gradient)
+      const grad = ctx.createLinearGradient(0, padT, 0, h);
+      grad.addColorStop(0, "rgba(252, 213, 53, 0.28)");
+      grad.addColorStop(1, "rgba(252, 213, 53, 0)");
+
+      ctx.beginPath();
+      ctx.moveTo(xAt(0), yAt(ys[0]));
+      for (let i = 1; i < ys.length; i++){
+        ctx.lineTo(xAt(i), yAt(ys[i]));
+      }
+      ctx.lineTo(xAt(ys.length - 1), h - padB);
+      ctx.lineTo(xAt(0), h - padB);
+      ctx.closePath();
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      // line
+      ctx.beginPath();
+      ctx.moveTo(xAt(0), yAt(ys[0]));
+      for (let i = 1; i < ys.length; i++){
+        ctx.lineTo(xAt(i), yAt(ys[i]));
+      }
+      ctx.lineWidth = 2.5;
+      ctx.strokeStyle = "#FCD535";
+      ctx.globalAlpha = 0.95;
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+
+    // ====== LOAD DATA ======
+    async function loadBotPage(){
+      const botId = getBotIdFromQuery();
+      if (!botId){
+        document.getElementById("botTitleName").textContent = "Не указан bot_id";
+        return;
+      }
+
+      // 1) Список ботов (для title и dropdown)
+      const botsResp = await apiGet(ENDPOINTS.bots);
+      const botsObj = botsResp.bots || {};
+      const botName = botsObj[botId] || botId;
+
+      document.title = `Bot ${botName}`;
+      document.getElementById("botTitleName").textContent = botName;
+
+      renderBotsMenu(botsObj, botId);
+
+      // 2) Текущий баланс + pnl (get_day_stat)
+      const stat = await apiGet(`${ENDPOINTS.dayStat}?bot_id=${encodeURIComponent(botId)}`);
+
+      const balEl = document.getElementById("botBalance");
+      const pnlEl = document.getElementById("botPnl");
+
+      balEl.textContent = fmt2(stat.balance);
+
+      pnlEl.className = `pnl-val ${pnlClass(stat.pnl)}`;
+      pnlEl.textContent = `${plus(stat.pnl)}$${fmt2(stat.pnl)} (${plus(stat.pnl_percent)}${fmt2(stat.pnl_percent)}%)`;
+
+      // 3) История + график (ОДИН вызов get_stat_history)
+      const history = await apiGet(`${ENDPOINTS.statHistory}?bot_id=${encodeURIComponent(botId)}`);
+
+      // chart: берем balance из history
+      drawBalanceChart(history);
+
+      // table
+      const body = document.getElementById("historyBody");
+      body.innerHTML = "";
+
+      for (const row of history.slice().reverse()){
+        const r = document.createElement("div");
+        r.className = "history-row";
+
+        const pnlCls = pnlClass(row.pnl);
+
+        r.innerHTML = `
+          <div class="col-date">${formatRuDate(row.date)}</div>
+          <div class="col-balance">${fmt2(row.balance)} $</div>
+          <div class="col-pnl ${pnlCls}">${plus(row.pnl)}${fmt2(row.pnl)} $</div>
+          <div class="col-pnlp ${pnlCls}">${plus(row.pnl_percent)}${fmt2(row.pnl_percent)}%</div>
+        `;
+
+        body.appendChild(r);
+      }
+
+      if (!history.length){
+        body.innerHTML = `<div class="muted">История пуста</div>`;
+      }
+    }
+
+    // ====== UI EVENTS ======
+    document.getElementById("botsDdBtn").addEventListener("click", () => {
+      const isOpen = document.getElementById("botsDdMenu").classList.contains("open");
+      setDdOpen(!isOpen);
+    });
+
+    document.addEventListener("click", (e) => {
+      const wrap = document.querySelector(".bots-dd");
+      if (!wrap.contains(e.target)) setDdOpen(false);
+    });
+
+    document.getElementById("downloadBtn").addEventListener("click", () => {
+      // заглушка под download_stat_history
+      alert("Скоро: выгрузка истории PNL");
+    });
+
+    (async () => {
+      try{
+        await loadBotPage();
+      }catch(e){
+        console.error(e);
+      }
+    })();
+  </script>
+</body>
+</html>
