@@ -100,8 +100,10 @@
 
     const ENDPOINTS = {
       bots: "/get_bots_list",
-      dayStat: "/get_day_stat",         // ?bot_id=
-      statHistory: "/get_stat_history"  // ?bot_id=
+      dayStat: "/get_day_stat",
+      statHistory: "/get_stat_history"
+      downloadHistory: "/download_stat_history"
+
     };
 
     // ====== HELPERS ======
@@ -320,8 +322,11 @@
     });
 
     document.getElementById("downloadBtn").addEventListener("click", () => {
-      // заглушка под download_stat_history
-      alert("Скоро: выгрузка истории PNL");
+      const botId = getBotIdFromQuery();
+      if (!botId) return;
+
+      const url = `${API_BASE}${ENDPOINTS.downloadHistory}?bot_id=${encodeURIComponent(botId)}`;
+      window.location.href = url; // браузер скачает файл сам
     });
 
     (async () => {
