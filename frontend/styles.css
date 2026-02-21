@@ -186,7 +186,7 @@ body{
 
 .bot-name .sub{
   color: var(--muted);
-  font-weight: 700;
+  font-weight: 400;
   font-size: 18px;
   white-space:nowrap;
   overflow:hidden;
@@ -195,14 +195,14 @@ body{
 
 .bot-balance{
   color: var(--text);
-  font-weight: 700;
+  font-weight: 500;
   font-size: 14px;
   min-width: 92px;
   text-align:right;
 }
 
 .bot-pnl{
-  font-weight: 800;
+  font-weight: 500;
   font-size: 14px;
   min-width: 76px;
   text-align:right;
