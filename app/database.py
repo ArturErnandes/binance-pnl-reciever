@@ -74,5 +74,5 @@ async def get_yesterday_balance_db(bot_id, day):
             raise RuntimeError(f"balance_not_found bot_id: {bot_id} day: {day}") from e
 
 
-async def post_day_stat(bot_id: str, day_stat: StatPostSchema):
+async def post_day_stat_db(day_stat: StatPostSchema):
     ...
