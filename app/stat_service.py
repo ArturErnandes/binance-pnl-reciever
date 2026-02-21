@@ -1,13 +1,54 @@
 import datetime
+from openpyxl import Workbook
+from fastapi.responses import StreamingResponse
+from openpyxl.utils import get_column_letter
+from io import BytesIO
 
 from .classes import ApiConfig, StatSchema
 from .binance import get_balance
-from .database import get_yesterday_balance_db
+from .database import get_yesterday_balance_db, get_stat_history_db
 from .config import bots_list
 from .logger import get_logger
 
 
 logger = get_logger(__name__)
+
+
+async def make_stat_file(bot_id: str) -> StreamingResponse:
+    stat_data = await get_stat_history_db(bot_id)
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "PnL history"
+
+    ws.append(["Дата", "Баланс", "PNL", "PNL %"])
+
+    for item in stat_data:
+        ws.append([
+            item.date,                 # datetime.date
+            float(item.balance),       # number
+            float(item.pnl),           # number
+            float(item.pnl_percent),   # number
+        ])
+
+    # formats: A date, B/C money, D percent-value (как у тебя, не *100 и не /100)
+    col_formats = {"A": "DD.MM.YYYY", "B": "0.00", "C": "0.00", "D": "0.00"}
+    for col, fmt in col_formats.items():
+        for cell in ws[col][1:]:
+            cell.number_format = fmt
+
+    for i, w in enumerate((14, 14, 12, 10), start=1):
+        ws.column_dimensions[get_column_letter(i)].width = w
+
+    bio = BytesIO()
+    wb.save(bio)
+    bio.seek(0)
+
+    return StreamingResponse(
+        bio,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": f'attachment; filename="stat_history_{bot_id}.xlsx"'},
+    )
 
 
 async def count_day_stat(bot_id: str):
