@@ -146,6 +146,11 @@
         <div class="bot-pnl ${pnlCls}">${pnlStr}</div>
       `;
 
+      row.style.cursor = "pointer";
+      row.addEventListener("click", () => {
+        window.location.href = `./bot_page.html?bot_id=${encodeURIComponent(botId)}`;
+      });
+
       container.appendChild(row);
     }
 
