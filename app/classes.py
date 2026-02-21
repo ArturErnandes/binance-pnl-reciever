@@ -51,6 +51,7 @@ class StatSchema:
 class StatPostSchema:
     bot_id: str
     date: datetime.date
+    balance: float
     pnl: float
     pnl_percent: float
 
