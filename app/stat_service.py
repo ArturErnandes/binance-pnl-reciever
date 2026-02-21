@@ -23,15 +23,14 @@ async def make_stat_file(bot_id: str) -> StreamingResponse:
 
     ws.append(["Дата", "Баланс", "PNL", "PNL %"])
 
-    for item in stat_data:
+    for item in sorted(stat_data, key=lambda x: x.date, reverse=True):
         ws.append([
-            item.date,                 # datetime.date
-            float(item.balance),       # number
-            float(item.pnl),           # number
-            float(item.pnl_percent),   # number
+            item.date,
+            float(item.balance),
+            float(item.pnl),
+            float(item.pnl_percent),
         ])
 
-    # formats: A date, B/C money, D percent-value (как у тебя, не *100 и не /100)
     col_formats = {"A": "DD.MM.YYYY", "B": "0.00", "C": "0.00", "D": "0.00"}
     for col, fmt in col_formats.items():
         for cell in ws[col][1:]:
