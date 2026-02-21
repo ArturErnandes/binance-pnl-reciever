@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Bot PnL</title>
-  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
   <main class="page botpage">
@@ -174,7 +174,7 @@
         const { main, sub } = splitName(botName);
 
         const item = document.createElement("a");
-        item.href = `./bot_page.html?bot_id=${encodeURIComponent(botId)}`;
+        item.href = `/bot?bot_id=${encodeURIComponent(botId)}`;
         item.className = "bots-dd-item";
         item.setAttribute("role", "menuitem");
 
