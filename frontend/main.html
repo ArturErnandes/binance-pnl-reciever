@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Trading bots PnL</title>
-  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
   <main class="page">
@@ -148,7 +148,7 @@
 
       row.style.cursor = "pointer";
       row.addEventListener("click", () => {
-        window.location.href = `./bot_page.html?bot_id=${encodeURIComponent(botId)}`;
+        window.location.href = `/bot?bot_id=${encodeURIComponent(botId)}`;
       });
 
       container.appendChild(row);
