@@ -12,23 +12,25 @@
 
     <section class="layout">
       <div class="left">
-        <div class="block-label">Общий баланс ботов</div>
+        <div class="summary-card">
+          <div class="block-label">Общий баланс ботов</div>
 
-        <div class="balance-row">
-          <div id="commonBalance" class="balance-value">
-            <span class="skeleton sk-balance" aria-label="loading"></span>
+          <div class="balance-row">
+            <div id="commonBalance" class="balance-value">
+              <span class="skeleton sk-balance" aria-label="loading"></span>
+            </div>
+            <div class="balance-unit">USDT</div>
           </div>
-          <div class="balance-unit">USDT</div>
-        </div>
 
-        <div class="pnl-row">
-          Общий PNL за сегодня
-          <span id="commonPnl" class="pnl-val">
-            <span class="skeleton sk-pnl" aria-label="loading"></span>
-          </span>
-        </div>
+          <div class="pnl-row">
+            Общий PNL за сегодня
+            <span id="commonPnl" class="pnl-val">
+              <span class="skeleton sk-pnl" aria-label="loading"></span>
+            </span>
+          </div>
 
-        <button class="btn" id="reloadBtn" type="button">Обновить</button>
+          <button class="btn" id="reloadBtn" type="button">Обновить</button>
+        </div>
       </div>
 
       <div class="right">
