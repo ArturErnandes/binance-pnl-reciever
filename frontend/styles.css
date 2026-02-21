@@ -49,6 +49,13 @@ body{
   padding-left: 80px;
 }
 
+.summary-card{
+  border: 3px solid #333944;
+  border-radius: 36px;
+  padding: 40px;
+  max-width: 500px;
+}
+
 .right{
   flex: 0 0 520px;
 }
