@@ -372,12 +372,17 @@ body{
 
 .col-balance, .col-pnl, .col-pnlp{
   text-align:right;
+  font-weight: 500;
+}
+
+.history-header .col-date{
+  color: var(--muted);
   font-weight: 600;
 }
 
-.col-date{
-  color: var(--muted);
-  font-weight: 600;
+.history-row:not(.history-header) .col-date{
+  color: var(--text);
+  font-weight: 500;
 }
 
 .history-row:not(.history-header):hover{
