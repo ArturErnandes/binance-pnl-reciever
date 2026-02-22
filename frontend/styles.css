@@ -5,6 +5,8 @@
   --muted: #898989;
   --panel: #2A313D;
   --yellow: #FCD535;
+  --dark_gray: #333944;
+  --black: #111318;
 
   --text: #ffffff;
   --soft: rgba(255,255,255,0.75);
@@ -32,7 +34,7 @@ body{
   font-weight: 800;
   letter-spacing: 0.3px;
   padding-left: 80px;
-  margin: 0 0 56px 110;
+  margin: 0 0 56px 110px;
 }
 
 .layout{
@@ -50,7 +52,7 @@ body{
 }
 
 .summary-card{
-  border: 3px solid #333944;
+  border: 3px solid var(--dark_gray);
   border-radius: 36px;
   padding: 40px;
   max-width: 500px;
@@ -96,6 +98,7 @@ body{
 
 .pnl-pos{ color: var(--green); }
 .pnl-neg{ color: var(--red); }
+.pnl-zero{ color: var(--muted); }
 
 .btn{
   margin-top: 18px;
@@ -106,7 +109,7 @@ body{
   padding: 0 18px;
   border: 0;
   background: var(--yellow);
-  color: #111318;
+  color: var(--black);
   font-weight: 800;
   border-radius: 8px;
   cursor:pointer;
@@ -165,7 +168,7 @@ body{
 .bot-row:hover .bot-name .sub,
 .bot-row:hover .bot-balance,
 .bot-row:hover .bot-pnl{
-  color: var(--muted) !important; /* 898989 */
+  color: var(--muted) !important;
 }
 
 .bot-name{
@@ -255,7 +258,7 @@ body{
   display:flex;
   align-items:baseline;
   gap: 24px;
-  padding-left: 0px;
+  padding-left: 0;
   margin-bottom: 26px;
 }
 
@@ -280,7 +283,7 @@ body{
 .bot-card{
   margin-left: 5px;
   margin-right: 5px;
-  border: 3px solid #333944;
+  border: 3px solid var(--dark_gray);
   border-radius: 28px;
   padding: 26px 28px;
 }
@@ -311,7 +314,6 @@ body{
   display:block;
 }
 
-/* History */
 .bot-history-card{
   margin-top: 18px;
   padding-top: 22px;
@@ -330,7 +332,7 @@ body{
 }
 
 .btn.btn-muted{
-  background: #333944;
+  background: var(--dark_gray);
   color: var(--soft);
   box-shadow: none;
   font-weight: 700;
@@ -374,7 +376,7 @@ body{
 }
 
 .col-date{
-  color: 898989;
+  color: var(--muted);
   font-weight: 600;
 }
 
@@ -382,7 +384,6 @@ body{
   background: rgba(255,255,255,0.03);
 }
 
-/* Dropdown */
 .bots-dd{
   position: relative;
 }
@@ -416,7 +417,7 @@ body{
   left: 0;
   width: 260px;
   background: #1f232b;
-  border: 2px solid #333944;
+  border: 2px solid var(--dark_gray);
   border-radius: 14px;
   padding: 10px;
   box-shadow: var(--shadow);
