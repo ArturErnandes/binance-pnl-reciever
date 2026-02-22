@@ -75,4 +75,19 @@ async def get_yesterday_balance_db(bot_id, day):
 
 
 async def post_day_stat_db(day_stat: StatPostSchema):
-    ...
+    logger.info(f"Запись PNL | day_stat: {day_stat}")
+
+    query = text("""INSERT INTO stats (bot_id, pnl_value, pnl_percent, day, balance)
+                    VALUES (:bot_id, :pnl_value, :pnl_percent, :day, :balance)
+                 """)
+    try:
+        async with new_session() as session:
+            await session.execute(query, {
+                "bot_id": day_stat.bot_id,
+                "pnl_value": day_stat.pnl,
+                "pnl_percent": day_stat.pnl_percent,
+                "day": day_stat.date,
+                "balance": day_stat.balance}
+            )
+    except Exception as e:
+        logger.exception(f"Ошибка при записи PNL | error: {str(e)}")
