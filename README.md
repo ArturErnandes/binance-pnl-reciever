@@ -1,5 +1,5 @@
 # binance-pnl-reciever </h1>
-Telegram mini-app for obtaining PnL of specified accounts via Binance Api
+Web service for obtaining PnL of specified accounts via Binance Api
 
 <details>
 <summary><b>Example of filling in the stat-data.json file</b></summary>
