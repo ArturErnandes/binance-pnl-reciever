@@ -5,7 +5,7 @@ import hashlib
 import requests
 from urllib.parse import urlencode
 
-from .classes import ApiConfig, StatSchema
+from .classes import ApiConfig
 from .logger import get_logger
 
 
