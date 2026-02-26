@@ -1,4 +1,5 @@
 import datetime
+import asyncio
 
 from .classes import StatPostSchema
 from .config import bots_list, ApiConfig
@@ -39,3 +40,29 @@ async def post_day_stat():
         )
 
         await post_day_stat_db(day_stat)
+
+
+async def stat_writer():
+    while True:
+        now = datetime.datetime.now()
+
+        run_at = now.replace(hour=23, minute=59, second=0, microsecond=0)
+        if run_at <= now:
+            run_at += datetime.timedelta(days=1)
+
+        sleep_sec = int((run_at - now).total_seconds())
+
+        h = sleep_sec // 3600
+        m = (sleep_sec % 3600) // 60
+        s = sleep_sec % 60
+
+        logger.info(
+            f"Запись статистики | следующий запуск: {run_at:%Y-%m-%d %H:%M:%S} | sleep={h:02d}:{m:02d}:{s:02d}"
+        )
+
+        await asyncio.sleep(sleep_sec)
+
+        try:
+            await post_day_stat()
+        except Exception:
+            logger.exception("Планировщик статистики | ошибка при post_day_stat")
