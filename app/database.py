@@ -89,5 +89,6 @@ async def post_day_stat_db(day_stat: StatPostSchema):
                 "day": day_stat.date,
                 "balance": day_stat.balance}
             )
+            await session.commit()
     except Exception as e:
         logger.exception(f"Ошибка при записи PNL | error: {str(e)}")
