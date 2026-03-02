@@ -72,6 +72,18 @@
       dayStat: "/get_day_stat" // ?bot_id=
     };
 
+    /**
+     * @typedef {Object} DayStat
+     * @property {number} balance
+     * @property {number} pnl
+     * @property {number} pnl_percent
+     */
+
+    /**
+     * @typedef {Object} BotsListResponse
+     * @property {Object.<string, string>} bots
+     */
+
     // ====== HELPERS ======
     const fmt2 = (n) => Number(n).toFixed(2);
 
@@ -90,6 +102,10 @@
       return { main: parts[0], sub: parts.slice(1).join(" ") };
     }
 
+    /**
+     * @param {string} path
+     * @returns {Promise<any>}
+     */
     async function apiGet(path){
       const url = API_BASE + path;
       const resp = await fetch(url, { method: "GET" });
@@ -102,6 +118,7 @@
       const commonBalanceEl = document.getElementById("commonBalance");
       const commonPnlEl = document.getElementById("commonPnl");
 
+      /** @type {DayStat} */
       const data = await apiGet(ENDPOINTS.common);
 
       commonBalanceEl.textContent = fmt2(data.balance);
@@ -125,6 +142,12 @@
       }
     }
 
+    /**
+     * @param {HTMLElement} container
+     * @param {string} botId
+     * @param {string} botName
+     * @param {DayStat} stat
+     */
     function renderBotRow(container, botId, botName, stat){
       const { main, sub } = splitName(botName);
 
@@ -157,6 +180,7 @@
     async function loadBots(){
       const botsEl = document.getElementById("botsList");
 
+      /** @type {BotsListResponse} */
       const botsResp = await apiGet(ENDPOINTS.bots);
       const botsObj = botsResp.bots || {};
 
@@ -167,6 +191,7 @@
       botsEl.innerHTML = "";
 
       const promises = botIds.map(async (botId) => {
+        /** @type {DayStat} */
         const stat = await apiGet(`${ENDPOINTS.dayStat}?bot_id=${encodeURIComponent(botId)}`);
         return { botId, name: botsObj[botId], stat };
       });
