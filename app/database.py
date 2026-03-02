@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy import text
 
 from .config import db_data
-from .classes import StatHistorySchema, StatPostSchema
+from .classes import StatHistorySchema, StatPostSchema, CommonStatSchema
 from .logger import get_logger
 
 
@@ -50,6 +50,38 @@ async def get_stat_history_db(bot_id: str):
         except Exception as e:
             logger.exception(f"Ошибка получения истории PnL | bot_id: {bot_id} | error: {str(e)}")
             return []
+
+
+async def get_common_stat_db(bot_id: str):
+    logger.info(f"Запрос общей статистики | Bot_id: {bot_id}")
+    query = text("""
+                 SELECT
+                   MIN(day) AS start_date,
+                   COUNT(*) AS work_time,
+                   SUM(pnl_value) AS pnl,
+                   SUM(pnl_percent) AS pnl_percent
+                 FROM stats
+                 WHERE bot_id = :bot_id
+                 """)
+
+    async with new_session() as session:
+        try:
+            result = await session.execute(query, {"bot_id": bot_id})
+            row = result.first()
+
+            stat = CommonStatSchema(
+                start_date=row.start_date,
+                work_time=int(row.work_time),
+                pnl=float(row.pnl),
+                pnl_percent=float(row.pnl_percent),
+            )
+
+            logger.info(f"Общая статистика получена | bot_id: {bot_id}")
+            return stat
+
+        except Exception as e:
+            logger.exception(f"Ошибка получения общей статистики | bot_id: {bot_id} | error: {str(e)}")
+            return {}
 
 
 async def get_yesterday_balance_db(bot_id, day):
