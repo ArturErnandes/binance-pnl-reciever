@@ -52,6 +52,31 @@
       </div>
     </section>
 
+    <!-- common stat card -->
+    <section class="bot-card bot-common-card">
+      <div class="history-head">
+        <div class="history-title">Общая статистика</div>
+      </div>
+
+      <div class="history-table">
+        <div class="history-row history-header">
+          <div class="col-start">Дата запуска</div>
+          <div class="col-work">Время работы</div>
+          <div class="col-total">Общий PNL</div>
+          <div class="col-totalp">Общий PNL %</div>
+        </div>
+
+        <div id="commonBody">
+          <div class="history-row">
+            <div class="skeleton sk-cstart"></div>
+            <div class="skeleton sk-cwork"></div>
+            <div class="skeleton sk-cpnl"></div>
+            <div class="skeleton sk-cpnlp"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- history card -->
     <section class="bot-card bot-history-card">
       <div class="history-head">
@@ -102,7 +127,8 @@
       bots: "/get_bots_list",
       dayStat: "/get_day_stat",
       statHistory: "/get_stat_history",
-      downloadHistory: "/download_stat_history"
+      downloadHistory: "/download_stat_history",
+      commonStat: "/get_common_stat"
 
     };
 
@@ -309,6 +335,33 @@
       if (!history.length){
         body.innerHTML = `<div class="muted">История пуста</div>`;
       }
+
+      // 4) Общая статистика
+      const common = await apiGet(`${ENDPOINTS.commonStat}?bot_id=${encodeURIComponent(botId)}`);
+
+      const commonBody = document.getElementById("commonBody");
+      commonBody.innerHTML = "";
+
+      if (!common || !common.start_date){
+        commonBody.innerHTML = `<div class="muted">Нет данных</div>`;
+        return;
+      }
+
+      const commonRow = document.createElement("div");
+      commonRow.className = "history-row";
+
+      const commonPnlCls = pnlClass(common.pnl);
+      const commonPnlText = `${plus(common.pnl)}${fmt2(common.pnl)} $`;
+      const commonPnlPText = `${plus(common.pnl_percent)}${fmt2(common.pnl_percent)}%`;
+
+      commonRow.innerHTML = `
+        <div class="col-start">${formatRuDate(common.start_date)}</div>
+        <div class="col-work">${Number(common.work_time)}</div>
+        <div class="col-total ${commonPnlCls}">${commonPnlText}</div>
+        <div class="col-totalp ${commonPnlCls}">${commonPnlPText}</div>
+      `;
+
+      commonBody.appendChild(commonRow);
     }
 
     // ====== UI EVENTS ======
