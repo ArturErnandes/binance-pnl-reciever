@@ -322,7 +322,10 @@ body{
 
   .col-balance,
   .col-pnl,
-  .col-pnlp{
+  .col-pnlp,
+  .col-work,
+  .col-total,
+  .col-totalp{
     text-align: left;
   }
 }
@@ -453,6 +456,11 @@ body{
   font-weight: 500;
 }
 
+.col-work, .col-total, .col-totalp{
+  text-align:right;
+  font-weight: 500;
+}
+
 .history-header .col-date{
   color: var(--muted);
   font-weight: 600;
@@ -551,3 +559,9 @@ body{
 .sk-hbal{ width: 90px; height: 16px; justify-self:end; }
 .sk-hpnl{ width: 70px; height: 16px; justify-self:end; }
 .sk-hpnlp{ width: 70px; height: 16px; justify-self:end; }
+
+/* skeletons for common stat */
+.sk-cstart{ width: 220px; height: 16px; }
+.sk-cwork{ width: 80px; height: 16px; justify-self:end; }
+.sk-cpnl{ width: 90px; height: 16px; justify-self:end; }
+.sk-cpnlp{ width: 90px; height: 16px; justify-self:end; }
