@@ -502,6 +502,7 @@ body::-webkit-scrollbar{
 .bots-dd-btn{
   display:inline-flex;
   align-items:center;
+  justify-content:space-between;
   gap: 8px;
   border: 0;
   background: transparent;
@@ -510,6 +511,7 @@ body::-webkit-scrollbar{
   font-size: 16px;
   cursor: pointer;
   padding: 6px 6px;
+  min-width: 320px;
   border-radius: 10px;
 }
 
@@ -526,7 +528,7 @@ body::-webkit-scrollbar{
   position:absolute;
   top: 40px;
   left: 0;
-  width: 260px;
+  width: 320px;
   background: #1f232b;
   border: 2px solid var(--dark_gray);
   border-radius: 14px;
