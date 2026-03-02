@@ -164,6 +164,15 @@
       return { main: parts[0], sub: parts.slice(1).join(" ") };
     }
 
+    function daysLabel(n){
+      const v = Math.abs(Number(n)) % 100;
+      const v1 = v % 10;
+      if (v > 10 && v < 20) return "дней";
+      if (v1 > 1 && v1 < 5) return "дня";
+      if (v1 === 1) return "день";
+      return "дней";
+    }
+
     // "2026-02-18" -> "18 февраля 2026"
     function formatRuDate(iso){
       const d = new Date(iso + "T00:00:00Z");
@@ -356,7 +365,7 @@
 
       commonRow.innerHTML = `
         <div class="col-start">${formatRuDate(common.start_date)}</div>
-        <div class="col-work">${Number(common.work_time)}</div>
+        <div class="col-work">${Number(common.work_time)} ${daysLabel(common.work_time)}</div>
         <div class="col-total ${commonPnlCls}">${commonPnlText}</div>
         <div class="col-totalp ${commonPnlCls}">${commonPnlPText}</div>
       `;
