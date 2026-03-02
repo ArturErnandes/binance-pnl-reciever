@@ -400,6 +400,11 @@ body{
   padding-top: 22px;
 }
 
+.bot-common-card{
+  margin-top: 18px;
+  padding-top: 22px;
+}
+
 .history-head{
   display:flex;
   align-items:center;
