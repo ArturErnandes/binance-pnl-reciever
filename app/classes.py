@@ -62,3 +62,11 @@ class StatHistorySchema:
     pnl: float
     pnl_percent: float
     balance: float
+
+
+@dataclass(frozen=True)
+class CommonStatSchema:
+    start_date: datetime.date
+    work_time: int
+    pnl: float
+    pnl_percent: float
