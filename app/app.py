@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .config import bots_list
 from .classes import BotsListResponse
-from .database import get_stat_history_db
+from .database import get_stat_history_db, get_common_stat_db
 from .stat_service import count_day_stat, count_all_balance, make_stat_file
 from .logger import get_logger
 
@@ -44,6 +44,11 @@ async def get_stat_history(bot_id: str):
 @app.get("/get_common_balance", tags=["PnL"], summary="Получение текущего баланса всех подключенных ботов")
 async def get_common_balance():
     return await count_all_balance()
+
+
+@app.get("/get_common_stat", tags=["PnL"], summary="Получение общей статистики бота")
+async def get_common_stat(bot_id: str):
+    return await get_common_stat_db(bot_id)
 
 
 @app.get("/download_stat_history", tags=["PnL"], summary="Загрузка файла со статистикой")
