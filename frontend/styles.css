@@ -249,7 +249,85 @@ body{
   .left{ min-width: auto; }
 }
 
-/* ===== BOT PAGE ===== */
+@media (max-width: 768px){
+  .page{
+    padding: 32px 18px;
+  }
+
+  .header-title{
+    font-size: 32px;
+    margin: 0 0 24px 0;
+    padding-left: 0;
+  }
+
+  .layout{
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .left, .right{
+    width: 100%;
+    min-width: 0;
+    padding: 0;
+  }
+
+  .summary-card{
+    max-width: 100%;
+    padding: 24px;
+  }
+
+  .panel{
+    padding: 18px;
+  }
+
+  .bot-row{
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .bot-balance,
+  .bot-pnl{
+    text-align: left;
+  }
+
+  .bot-top{
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .bot-title{
+    font-size: 28px;
+  }
+
+  .bot-balance-card{
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .bot-chart-wrap{
+    width: 100%;
+    height: 180px;
+  }
+
+  .bot-chart-wrap canvas{
+    width: 100%;
+    height: 160px;
+  }
+
+  .history-row{
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .col-balance,
+  .col-pnl,
+  .col-pnlp{
+    text-align: left;
+  }
+}
+
+
 .botpage{
   padding-top: 56px;
 }
