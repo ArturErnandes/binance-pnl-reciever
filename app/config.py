@@ -26,6 +26,7 @@ bots_list = BotsList(
         TradeBotSchema(
             key=bot_id,
             name=bot_cfg["name"],
+            ticker=bot_cfg["ticker"],
             api=ApiConfig(
                 key=bot_cfg["api"]["key"],
                 secret=bot_cfg["api"]["secret"],
