@@ -1,7 +1,6 @@
 .header-title{
   font-size: 56px;
   font-weight: 800;
-  letter-spacing: 0;
   margin: 20px 0 56px 80px;
 }
 
@@ -33,7 +32,7 @@
 .panel{
   background: var(--panel);
   border-radius: var(--radius);
-  padding: 22px 22px 18px 22px;
+  padding: 22px 22px 18px;
   box-shadow: var(--shadow);
 }
 
@@ -69,10 +68,7 @@
 }
 
 .bot-row:hover,
-.bot-row:hover .bot-name .main,
-.bot-row:hover .bot-name .sub,
-.bot-row:hover .bot-balance,
-.bot-row:hover .bot-pnl{
+.bot-row:hover :is(.main, .sub, .bot-balance, .bot-pnl){
   color: var(--muted) !important;
 }
 
@@ -83,37 +79,38 @@
   min-width:0;
 }
 
-.bot-name .main{
-  color: var(--text);
-  font-weight: 800;
+.bot-name .main,
+.bot-name .sub{
   font-size: 18px;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
+}
+
+.bot-name .main{
+  color: var(--text);
+  font-weight: 800;
 }
 
 .bot-name .sub{
   color: var(--muted);
   font-weight: 400;
-  font-size: 18px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
+}
+
+.bot-balance,
+.bot-pnl{
+  font-weight: 500;
+  font-size: 14px;
+  text-align:right;
 }
 
 .bot-balance{
   color: var(--text);
-  font-weight: 500;
-  font-size: 14px;
   min-width: 92px;
-  text-align:right;
 }
 
 .bot-pnl{
-  font-weight: 500;
-  font-size: 14px;
   min-width: 76px;
-  text-align:right;
 }
 
 .sk-botname{ width: 200px; height: 18px; }
@@ -130,12 +127,6 @@
   .header-title{
     font-size: 32px;
     margin: 0 0 24px 0;
-    padding-left: 0;
-  }
-
-  .layout{
-    flex-direction: column;
-    gap: 24px;
   }
 
   .left, .right{

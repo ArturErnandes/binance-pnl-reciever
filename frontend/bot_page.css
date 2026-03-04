@@ -6,7 +6,6 @@
   display:flex;
   align-items:baseline;
   gap: 24px;
-  padding-left: 0;
   margin-bottom: 26px;
 }
 
@@ -14,7 +13,6 @@
   margin: 0;
   font-size: 42px;
   font-weight: 800;
-  letter-spacing: 0;
 }
 
 .bot-title-prefix{
@@ -29,8 +27,7 @@
 }
 
 .bot-card{
-  margin-left: 5px;
-  margin-right: 5px;
+  margin: 0 5px;
   border: 3px solid var(--dark_gray);
   border-radius: 28px;
   padding: 26px 28px;
@@ -62,11 +59,7 @@
   display:block;
 }
 
-.bot-history-card{
-  margin-top: 18px;
-  padding-top: 22px;
-}
-
+.bot-history-card,
 .bot-common-card{
   margin-top: 18px;
   padding-top: 22px;
@@ -120,14 +113,9 @@
   color: var(--muted);
   font-size: 12px;
   letter-spacing: 1px;
-  text-transform: none;
 }
 
-.col-balance, .col-pnl, .col-pnlp{
-  text-align:right;
-  font-weight: 500;
-}
-
+.col-balance, .col-pnl, .col-pnlp,
 .col-work, .col-total, .col-totalp{
   text-align:right;
   font-weight: 500;
@@ -196,18 +184,21 @@
   display:flex;
   gap: 8px;
   align-items:baseline;
-  padding: 10px 10px;
+  padding: 10px;
   border-radius: 10px;
   text-decoration:none;
 }
 
-.bots-dd-item .dd-main{
+.bots-dd-item .dd-main,
+.bots-dd-item .dd-sub{
   color: var(--muted);
+}
+
+.bots-dd-item .dd-main{
   font-weight: 800;
 }
 
 .bots-dd-item .dd-sub{
-  color: var(--muted);
   font-weight: 400;
 }
 
