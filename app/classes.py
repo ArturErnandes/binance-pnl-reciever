@@ -22,6 +22,7 @@ class ApiConfig:
 class TradeBotSchema:
     key: str
     name: str
+    ticker: str
     api: ApiConfig
 
 
