@@ -129,45 +129,25 @@
     }
 
     // ====== RENDER BOTS ======
-    function renderBotsSkeleton(container, count){
-      container.innerHTML = "";
-      for (let i = 0; i < count; i++){
-        const row = document.createElement("div");
-        row.className = "bot-row";
-        row.innerHTML = `
-          <div class="skeleton sk-botname"></div>
-          <div class="skeleton sk-botbal"></div>
-          <div class="skeleton sk-botpnl"></div>
-        `;
-        container.appendChild(row);
-      }
-    }
-
     /**
      * @param {HTMLElement} container
      * @param {string} botId
      * @param {string} botName
-     * @param {DayStat} stat
+     * @returns {{ balanceEl: HTMLElement, pnlEl: HTMLElement }}
      */
-    function renderBotRow(container, botId, botName, stat){
+    function renderBotRow(container, botId, botName){
       const { main, sub } = splitName(botName);
 
       const row = document.createElement("div");
       row.className = "bot-row";
-
-      const pnlCls = pnlClass(stat.pnl);
-      const pnlStr = (() => {
-        const sign = stat.pnl >= 0 ? "+" : "";
-        return `${sign}${fmt2(stat.pnl)} $`;
-      })();
 
       row.innerHTML = `
         <div class="bot-name" title="${botId}">
           <span class="main">${main}</span>
           ${sub ? `<span class="sub">${sub}</span>` : ""}
         </div>
-        <div class="bot-balance">$${fmt2(stat.balance)}</div>
-        <div class="bot-pnl ${pnlCls}">${pnlStr}</div>
+        <div class="bot-balance"><span class="skeleton sk-botbal" aria-label="loading"></span></div>
+        <div class="bot-pnl"><span class="skeleton sk-botpnl" aria-label="loading"></span></div>
       `;
 
       row.style.cursor = "pointer";
@@ -176,6 +156,25 @@
       });
 
       container.appendChild(row);
+
+      return {
+        balanceEl: row.querySelector(".bot-balance"),
+        pnlEl: row.querySelector(".bot-pnl"),
+      };
+    }
+
+    /**
+     * @param {{ balanceEl: HTMLElement, pnlEl: HTMLElement }} rowRefs
+     * @param {DayStat} stat
+     */
+    function fillBotRowStat(rowRefs, stat){
+      const pnlCls = pnlClass(stat.pnl);
+      const sign = stat.pnl >= 0 ? "+" : "";
+      const pnlStr = `${sign}${fmt2(stat.pnl)} $`;
+
+      rowRefs.balanceEl.textContent = `$${fmt2(stat.balance)}`;
+      rowRefs.pnlEl.className = `bot-pnl ${pnlCls}`;
+      rowRefs.pnlEl.textContent = pnlStr;
     }
 
     async function loadBots(){
@@ -187,25 +186,32 @@
 
       const botIds = Object.keys(botsObj);
 
-      renderBotsSkeleton(botsEl, Math.max(3, botIds.length || 3));
-
-      botsEl.innerHTML = "";
-
-      const promises = botIds.map(async (botId) => {
-        /** @type {DayStat} */
-        const stat = await apiGet(`${ENDPOINTS.dayStat}?bot_id=${encodeURIComponent(botId)}`);
-        return { botId, name: botsObj[botId], stat };
-      });
-
-      const results = await Promise.all(promises);
-
-      for (const r of results){
-        renderBotRow(botsEl, r.botId, r.name, r.stat);
-      }
-
       if (botIds.length === 0){
         botsEl.innerHTML = `<div class="muted">Нет подключенных ботов</div>`;
+        return;
       }
+
+      botsEl.innerHTML = "";
+      const rowRefsByBotId = {};
+
+      for (const botId of botIds){
+        rowRefsByBotId[botId] = renderBotRow(botsEl, botId, botsObj[botId]);
+      }
+
+      const promises = botIds.map(async (botId) => {
+        try{
+          /** @type {DayStat} */
+          const stat = await apiGet(`${ENDPOINTS.dayStat}?bot_id=${encodeURIComponent(botId)}`);
+          fillBotRowStat(rowRefsByBotId[botId], stat);
+        }catch(e){
+          console.error(e);
+          rowRefsByBotId[botId].balanceEl.textContent = "—";
+          rowRefsByBotId[botId].pnlEl.className = "bot-pnl pnl-zero";
+          rowRefsByBotId[botId].pnlEl.textContent = "—";
+        }
+      });
+
+      await Promise.allSettled(promises);
     }
 
     document.getElementById("reloadBtn").addEventListener("click", () => {
