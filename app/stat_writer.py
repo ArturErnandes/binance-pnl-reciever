@@ -25,7 +25,7 @@ async def post_day_stat():
             secret=bot.api.secret,
         )
 
-        balance = get_balance(api)
+        balance = get_balance(api, bot.ticker)
         yesterday_balance = await get_yesterday_balance_db(bot.key, yesterday)
 
         pnl_value = balance - yesterday_balance

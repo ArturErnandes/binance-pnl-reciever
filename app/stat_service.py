@@ -58,7 +58,7 @@ async def count_day_stat(bot_id: str):
         secret=bot.api.secret,
     )
 
-    balance = get_balance(api)
+    balance = get_balance(api, bot.ticker)
     yesterday = datetime.date.today() - datetime.timedelta(days=1)
 
     yesterday_balance = await get_yesterday_balance_db(bot_id, yesterday)
@@ -87,7 +87,7 @@ async def count_all_balance():
             secret=bot.api.secret,
         )
 
-        balance = get_balance(api)
+        balance = get_balance(api, bot.ticker)
         total_balance += float(balance)
 
         yesterday_balance = await get_yesterday_balance_db(bot.key, yesterday)
