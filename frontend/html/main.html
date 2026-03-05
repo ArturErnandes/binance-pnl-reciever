@@ -88,13 +88,23 @@
     // ====== HELPERS ======
     const fmt2 = (n) => Number(n).toFixed(2);
 
+    function normalizeNearZero(n){
+      const v = Number(n);
+      return Math.abs(v) < 0.005 ? 0 : v;
+    }
+
     function pnlClass(pnl){
-      return pnl >= 0 ? "pnl-pos" : "pnl-neg";
+      const v = normalizeNearZero(pnl);
+      if (v === 0) return "pnl-zero";
+      return v > 0 ? "pnl-pos" : "pnl-neg";
     }
 
     function pnlText(pnl, pnlPercent){
-      const sign = pnl >= 0 ? "+" : "";
-      return `${sign}$${fmt2(pnl)} (${sign}${fmt2(pnlPercent)}%)`;
+      const pnlV = normalizeNearZero(pnl);
+      const pnlPercentV = normalizeNearZero(pnlPercent);
+      const sign = pnlV >= 0 ? "+" : "";
+      const signPercent = pnlPercentV >= 0 ? "+" : "";
+      return `${sign}$${fmt2(pnlV)} (${signPercent}${fmt2(pnlPercentV)}%)`;
     }
 
     function splitName(name){
@@ -168,9 +178,10 @@
      * @param {DayStat} stat
      */
     function fillBotRowStat(rowRefs, stat){
-      const pnlCls = pnlClass(stat.pnl);
-      const sign = stat.pnl >= 0 ? "+" : "";
-      const pnlStr = `${sign}${fmt2(stat.pnl)} $`;
+      const pnlV = normalizeNearZero(stat.pnl);
+      const pnlCls = pnlClass(pnlV);
+      const sign = pnlV >= 0 ? "+" : "";
+      const pnlStr = `${sign}${fmt2(pnlV)} $`;
 
       rowRefs.balanceEl.textContent = `$${fmt2(stat.balance)}`;
       rowRefs.pnlEl.className = `bot-pnl ${pnlCls}`;
