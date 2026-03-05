@@ -1,10 +1,11 @@
+import asyncio
 import datetime
 from openpyxl import Workbook
 from fastapi.responses import StreamingResponse
 from openpyxl.utils import get_column_letter
 from io import BytesIO
 
-from .classes import ApiConfig, StatSchema
+from .classes import ApiConfig, StatSchema, BotBalanceResult
 from .binance import get_balance
 from .database import get_yesterday_balance_db, get_stat_history_db
 from .config import bots_list
@@ -73,26 +74,35 @@ async def count_day_stat(bot_id: str):
     )
 
 
-async def count_all_balance():
-    yesterday = datetime.date.today() - datetime.timedelta(days=1)
-
-    total_balance = 0
-    total_yesterday_balance = 0
-
-    bots = bots_list.bots
-
-    for bot in bots:
+async def get_balance_parallel(bot, yesterday, sem):
+    async with sem:
         api = ApiConfig(
             key=bot.api.key,
             secret=bot.api.secret,
         )
 
-        balance = get_balance(api, bot.ticker)
-        total_balance += float(balance)
-
+        balance = await asyncio.to_thread(get_balance, api, bot.ticker)
         yesterday_balance = await get_yesterday_balance_db(bot.key, yesterday)
 
-        total_yesterday_balance += float(yesterday_balance)
+        return BotBalanceResult(
+            balance=float(balance),
+            yesterday_balance=float(yesterday_balance),
+        )
+
+
+async def count_all_balance():
+    yesterday = datetime.date.today() - datetime.timedelta(days=1)
+
+    bots = bots_list.bots
+    sem = asyncio.Semaphore(5)
+
+    results = await asyncio.gather(*[
+        get_balance_parallel(bot, yesterday, sem)
+        for bot in bots
+    ])
+
+    total_balance = sum(item.balance for item in results)
+    total_yesterday_balance = sum(item.yesterday_balance for item in results)
 
     pnl_value = total_balance - total_yesterday_balance
 
