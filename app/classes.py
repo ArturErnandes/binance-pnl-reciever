@@ -49,6 +49,12 @@ class StatSchema:
 
 
 @dataclass(frozen=True)
+class BotBalanceResult:
+    balance: float
+    yesterday_balance: float
+
+
+@dataclass(frozen=True)
 class StatPostSchema:
     bot_id: str
     date: datetime.date
