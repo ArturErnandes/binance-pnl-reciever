@@ -32,13 +32,17 @@
 
           <button class="btn" id="reloadBtn" type="button">Обновить</button>
         </div>
-      </div>
 
-      <div class="right">
-        <div class="panel">
+        <div class="panel bots-panel">
           <div class="panel-title">
             Список подключенных ботов
             <div class="panel-underline"></div>
+          </div>
+
+          <div class="bot-row bots-head">
+            <div class="bot-name">Название</div>
+            <div class="bot-balance">Баланс</div>
+            <div class="bot-pnl">PNL</div>
           </div>
 
           <div id="botsList" class="bots">
@@ -167,10 +171,13 @@
 
       container.appendChild(row);
 
-      return {
-        balanceEl: row.querySelector(".bot-balance"),
-        pnlEl: row.querySelector(".bot-pnl"),
-      };
+      const balanceEl = row.querySelector(".bot-balance");
+      const pnlEl = row.querySelector(".bot-pnl");
+      if (!(balanceEl instanceof HTMLElement) || !(pnlEl instanceof HTMLElement)){
+        throw new Error("Bot row elements not found");
+      }
+
+      return { balanceEl, pnlEl };
     }
 
     /**
