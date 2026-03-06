@@ -1,21 +1,18 @@
 .header-title{
   font-size: 56px;
   font-weight: 800;
-  margin: 20px 0 56px 80px;
+  margin: -10px 0 56px 80px;
 }
 
 .layout{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap: 56px;
+  display:block;
 }
 
 .left{
-  flex: 1 1 auto;
   min-width: 420px;
-  padding-top: 50px;
+  padding-top: 0;
   padding-left: 80px;
+  margin: -10px 0 0 0;
 }
 
 .summary-card{
@@ -25,10 +22,6 @@
   max-width: 500px;
 }
 
-.right{
-  flex: 0 0 520px;
-}
-
 .panel{
   background: var(--panel);
   border-radius: var(--radius);
@@ -36,9 +29,19 @@
   box-shadow: var(--shadow);
 }
 
+.bots-panel{
+  margin-top: 40px;
+  width: min(920px, calc(100vw - 140px));
+  border: 0;
+  border-radius: 36px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  padding: 40px 40px 25px 40px;
+}
+
 .panel-title{
   font-weight: 800;
-  font-size: 18px;
+  font-size: 22px;
   margin: 0 0 14px 0;
 }
 
@@ -51,25 +54,31 @@
 }
 
 .bots{
-  margin-top: 18px;
+  margin-top: 12px;
   display:flex;
   flex-direction:column;
-  gap: 14px;
+  gap: 2px;
 }
 
 .bot-row{
   display:grid;
-  grid-template-columns: 1fr auto auto;
+  grid-template-columns: 1.4fr 0.7fr 0.6fr;
   align-items:center;
   gap: 16px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  transition: background 120ms ease, color 120ms ease;
+  padding: 10px 0;
+  border-radius: 160px;
+  transition: background 120ms ease;
 }
 
-.bot-row:hover,
-.bot-row:hover :is(.main, .sub, .bot-balance, .bot-pnl){
-  color: var(--muted) !important;
+.bot-row:not(.bots-head){
+  margin-left: -16px;
+  margin-right: -16px;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+.bot-row:not(.bots-head):hover{
+  background: rgba(255,255,255,0.03);
 }
 
 .bot-name{
@@ -81,10 +90,26 @@
 
 .bot-name .main,
 .bot-name .sub{
-  font-size: 18px;
+  font-size: 17px;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
+}
+
+.bots-head{
+  padding-top: 6px;
+  padding-bottom: 6px;
+  color: var(--muted);
+  font-size: 17px;
+  letter-spacing: 1px;
+}
+
+.bots-head .bot-name,
+.bots-head .bot-balance,
+.bots-head .bot-pnl{
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 17px;
 }
 
 .bot-name .main{
@@ -100,7 +125,7 @@
 .bot-balance,
 .bot-pnl{
   font-weight: 500;
-  font-size: 14px;
+  font-size: 17px;
   text-align:right;
 }
 
@@ -118,9 +143,11 @@
 .sk-botpnl{ width: 76px; height: 16px; }
 
 @media (max-width: 1100px){
-  .layout{ flex-direction:column; }
-  .right{ width: 100%; flex: 1 1 auto; }
   .left{ min-width: auto; }
+  .bots-panel{
+    width: 100%;
+    max-width: 100%;
+  }
 }
 
 @media (max-width: 768px){
@@ -129,7 +156,7 @@
     margin: 0 0 24px 0;
   }
 
-  .left, .right{
+  .left{
     width: 100%;
     min-width: 0;
     padding: 0;
@@ -142,6 +169,14 @@
 
   .panel{
     padding: 18px;
+  }
+
+  .bots-panel{
+    padding: 280px 40px 24px 28px;
+  }
+
+  .bots-head{
+    display: none;
   }
 
   .bot-row{
