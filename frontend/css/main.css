@@ -18,7 +18,7 @@
 .summary-card{
   border: 3px solid var(--dark_gray);
   border-radius: 36px;
-  padding: 40px;
+  padding: 30px 40px 40px 30px;
   max-width: 500px;
 }
 
@@ -36,7 +36,7 @@
   border-radius: 36px;
   background: var(--panel);
   box-shadow: var(--shadow);
-  padding: 40px 40px 25px 40px;
+  padding: 30px 30px 30px 30px;
 }
 
 .panel-title{
@@ -54,7 +54,7 @@
 }
 
 .bots{
-  margin-top: 12px;
+  margin-top: 8px;
   display:flex;
   flex-direction:column;
   gap: 2px;
@@ -83,7 +83,7 @@
 
 .bot-name{
   display:flex;
-  gap: 8px;
+  gap: 2px;
   align-items:baseline;
   min-width:0;
 }
